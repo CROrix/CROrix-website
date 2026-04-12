@@ -185,20 +185,20 @@ img{display:block;}
 /* Mobile: auto-sweeping grid instead of cursor */
 @media(hover:none){
   #hero-grid-active{
-    -webkit-mask-image:linear-gradient(to right, transparent 0%, black 30%, black 60%, transparent 100%), linear-gradient(to bottom, black 70%, transparent 100%);
+    -webkit-mask-image:linear-gradient(to right, transparent 0%, black 42%, black 52%, transparent 100%), linear-gradient(to bottom, black 70%, transparent 100%);
     -webkit-mask-composite:source-in;
-    mask-image:linear-gradient(to right, transparent 0%, black 30%, black 60%, transparent 100%), linear-gradient(to bottom, black 70%, transparent 100%);
+    mask-image:linear-gradient(to right, transparent 0%, black 42%, black 52%, transparent 100%), linear-gradient(to bottom, black 70%, transparent 100%);
     mask-composite:intersect;
-    mask-size:200% 100%;
-    -webkit-mask-size:200% 100%;
-    mask-position:200% 0%;
-    -webkit-mask-position:200% 0%;
-    animation:gridSweep 4s ease-in-out infinite;
+    mask-size:300% 100%;
+    -webkit-mask-size:300% 100%;
+    mask-position:300% 0%;
+    -webkit-mask-position:300% 0%;
+    animation:gridSweep 10s ease-in-out infinite;
   }
   @keyframes gridSweep{
-    0%   { mask-position:200% 0%; -webkit-mask-position:200% 0%; }
-    50%  { mask-position:-100% 0%; -webkit-mask-position:-100% 0%; }
-    100% { mask-position:200% 0%; -webkit-mask-position:200% 0%; }
+    0%   { mask-position:300% 0%; -webkit-mask-position:300% 0%; }
+    50%  { mask-position:-150% 0%; -webkit-mask-position:-150% 0%; }
+    100% { mask-position:300% 0%; -webkit-mask-position:300% 0%; }
   }
 }
 .grid-svg{width:100%;height:100%;display:block;}
@@ -924,6 +924,7 @@ footer{
   .pricing-cards{gap:32px;}
 }
 @media(max-width:860px){
+  .services-scroll{height:380vh;}
   .nav-links{display:none;}
   .hero-inner{grid-template-columns:1fr;text-align:center;gap:40px;padding:40px 0 64px;}
   .hero-sub{margin-left:auto;margin-right:auto;}
@@ -1564,9 +1565,9 @@ window.addEventListener('scroll', function(){
   /* On mobile use tighter positions so logos stay within viewport */
   var isMobile = window.innerWidth <= 560;
   var finalPos = isMobile ? [
-    [-110,  -70, -3],
+    [-110, -120, -3],
     [ -30,  130,  2],
-    [  90,  -50,  3],
+    [  90, -110,  3],
     [ 130,   70, -2]
   ] : [
     [-340,  -90, -4],
