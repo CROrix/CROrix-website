@@ -337,7 +337,7 @@ img{display:block;}
 /* ─── Services scroll section ─── */
 .services-scroll{
   position:relative;
-  height:400vh;
+  height:500vh;
   background:var(--bg);
 }
 .services-sticky{
@@ -1452,7 +1452,35 @@ const io = new IntersectionObserver(function(entries){
     if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
   });
 }, {threshold: .08, rootMargin: '0px 0px -24px 0px'});
-document.querySelectorAll('.fade').forEach(function(el){ io.observe(el); });
+
+/* Elements inside or before the services section fade in normally.
+   Elements after services only start observing once the services animation is done (p=1). */
+var servicesSection = document.getElementById('services');
+var afterServicesFades = [];
+document.querySelectorAll('.fade').forEach(function(el){
+  // Check if element comes after the services section in the DOM
+  if(servicesSection.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING){
+    afterServicesFades.push(el);
+  } else {
+    io.observe(el);
+  }
+});
+
+var afterServicesUnlocked = false;
+function unlockAfterServicesFades(){
+  if(afterServicesUnlocked) return;
+  afterServicesUnlocked = true;
+  afterServicesFades.forEach(function(el){ io.observe(el); });
+}
+
+window.addEventListener('scroll', function(){
+  if(afterServicesUnlocked) return;
+  var sRect = servicesSection.getBoundingClientRect();
+  var sTop  = window.scrollY + sRect.top;
+  var range = servicesSection.offsetHeight - window.innerHeight;
+  var p     = (window.scrollY - sTop) / range;
+  if(p >= 1) unlockAfterServicesFades();
+}, {passive:true});
 
 /* ══ Services step reveal ══ */
 (function(){
@@ -1514,7 +1542,14 @@ document.querySelectorAll('.fade').forEach(function(el){ io.observe(el); });
     document.getElementById('lc-flamit')
   ];
 
-  var finalPos = [
+  /* On mobile use tighter positions so logos stay within viewport */
+  var isMobile = window.innerWidth <= 560;
+  var finalPos = isMobile ? [
+    [-110,  -70, -3],
+    [ -30,  130,  2],
+    [  90,  -50,  3],
+    [ 130,   70, -2]
+  ] : [
     [-340,  -90, -4],
     [ -80,  190,  2],
     [ 260,  -70,  5],
