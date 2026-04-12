@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CROrix — Broken part, custom fit, new idea. We solve it in 3D.</title>
+<link rel="icon" type="image/png" href="Materijali/dizajn 12 favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "three":          "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+
+/* ─── Tokens ─── */
+:root {
+  --red:   #D42B1A;
+  --blue:  #1440B8;
+  --mid:   #D8D4EC;
+  --grad:        linear-gradient(135deg, #D42B1A 0%, #D8D4EC 50%, #1440B8 100%);
+  --grad-bright: linear-gradient(120deg, #D42B1A 0%, #D8D4EC 50%, #1440B8 100%);
+
+  --text:   #0D0D12;
+  --text-2: #52526A;
+  --text-3: #9898B0;
+  --bg:     #FFFFFF;
+  --bg-2:   #F5F5FA;
+  --bg-3:   #EEEEF6;
+  --border: #E2E2EE;
+
+  --sh-card:   0 2px 8px rgba(12,12,30,.06), 0 12px 40px rgba(12,12,30,.08);
+  --sh-lift:   0 8px 32px rgba(12,12,30,.10), 0 32px 80px rgba(12,12,30,.12);
+  --sh-mockup: 0 4px 20px rgba(12,12,30,.08), 0 20px 72px rgba(12,12,30,.14);
+
+  --r: 14px;
+  --nav-h: 80px;
+}
+
+/* ─── Reset ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.65;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit;}
+img{display:block;}
+
+/* ─── Util ─── */
+.container{max-width:1180px;margin:0 auto;padding:0 36px;}
+.grad-text{
+  background:var(--grad-bright);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* ─── Buttons ─── */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;
+  border:none;border-radius:10px;cursor:pointer;text-decoration:none;
+  transition:all .2s ease;white-space:nowrap;
+}
+.btn-grad{
+  padding:12px 26px;
+  background:var(--grad);
+  color:#fff;
+  box-shadow:0 4px 18px rgba(212,43,26,.30);
+  position:relative;isolation:isolate;
+}
+/* Shine sweep animation */
+.btn-grad::after{
+  content:'';
+  position:absolute;top:0;left:-110%;
+  width:55%;height:100%;
+  background:linear-gradient(105deg, transparent 20%, rgba(255,255,255,.48) 50%, transparent 80%);
+  animation:btnShine 3.8s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes btnShine{
+  0%,20%  { left:-110%; }
+  55%,100%{ left:145%; }
+}
+.btn-grad:hover{opacity:.88;transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,43,26,.40);}
+.btn-outline{
+  padding:12px 26px;
+  background:rgba(255,255,255,0.85);
+  color:var(--text);
+  border:1.5px solid var(--border);
+  backdrop-filter:blur(4px);
+}
+.btn-outline:hover{background:var(--bg-2);border-color:var(--text-3);transform:translateY(-2px);}
+
+/* ─── Navbar ─── */
+.nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:200;
+  height:var(--nav-h);
+  display:flex;align-items:center;
+  padding:0 24px;
+}
+.nav-pill{
+  display:flex;align-items:center;
+  width:100%;max-width:1140px;
+  margin:0 auto;
+  padding:10px 10px 10px 20px;
+  background:rgba(255,255,255,0.88);
+  border:1px solid rgba(226,226,238,0.9);
+  border-radius:60px;
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  box-shadow:0 4px 28px rgba(12,12,30,.09), 0 1px 0 rgba(255,255,255,.9) inset;
+  gap:4px;
+}
+.nav-logo img{height:30px;width:auto;flex-shrink:0;}
+.nav-links{display:flex;gap:0;list-style:none;margin-left:14px;}
+.nav-links a{
+  display:block;padding:8px 16px;
+  font-size:.855rem;font-weight:500;color:var(--text-2);
+  border-radius:40px;transition:background .15s,color .15s;
+}
+.nav-links a:hover{background:rgba(0,0,0,.055);color:var(--text);}
+.nav-right{margin-left:auto;}
+.nav-quote{
+  display:inline-flex;align-items:center;
+  padding:10px 24px;border-radius:50px;
+  background:var(--grad);color:white;
+  font-family:'DM Sans',sans-serif;font-size:.855rem;font-weight:700;
+  border:none;cursor:pointer;text-decoration:none;
+  box-shadow:0 4px 16px rgba(212,43,26,.28);
+  transition:all .2s;white-space:nowrap;
+  position:relative;overflow:hidden;isolation:isolate;
+}
+.nav-quote:hover{opacity:.93;transform:translateY(-1px);box-shadow:0 8px 28px rgba(212,43,26,.40);}
+/* Blurred gradient glow that blooms on hover */
+.nav-quote::before{
+  content:'';
+  position:absolute;inset:-6px;
+  background:linear-gradient(120deg,#D42B1A,#D8D4EC,#1440B8);
+  filter:blur(14px);
+  opacity:0;
+  border-radius:inherit;
+  z-index:-1;
+  transition:opacity .45s ease, filter .45s ease;
+  pointer-events:none;
+}
+.nav-quote:hover::before{opacity:.75;filter:blur(18px);}
+
+/* ─── Hero ─── */
+.hero{
+  min-height:100vh;
+  display:flex;align-items:center;
+  position:relative;overflow:hidden;
+  padding-top:var(--nav-h);
+  z-index:2; /* paint above sticky services/clients panels on scroll-up */
+}
+
+/* ── Infinite grid layers ── */
+.hero-grid-layer{
+  position:absolute;inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+#hero-grid-bg{opacity:0;pointer-events:none;}
+#hero-grid-active{
+  opacity:.6;
+  /* 0px radius = invisible until JS sets a real cursor position */
+  -webkit-mask-image:radial-gradient(0px circle at 50% 50%, black 0%, transparent 100%), linear-gradient(to bottom, black 70%, transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:radial-gradient(0px circle at 50% 50%, black 0%, transparent 100%), linear-gradient(to bottom, black 70%, transparent 100%);
+  mask-composite:intersect;
+  transition:none;
+}
+.grid-svg{width:100%;height:100%;display:block;}
+
+/* Glow blobs */
+.hero-glow{
+  position:absolute;border-radius:50%;
+  filter:blur(100px);pointer-events:none;
+  z-index:0;
+}
+.glow-b{width:480px;height:480px;background:radial-gradient(circle,rgba(20,64,184,.10),transparent 70%);bottom:-80px;left:22%;animation:driftA 18s ease-in-out infinite reverse;}
+@keyframes driftA{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(24px,-24px) scale(1.07);}}
+
+.hero-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:160px;align-items:center;
+  padding:40px 0 80px;
+  position:relative;z-index:1;
+  width:100%;
+}
+
+/* Left */
+.hero-pill-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 14px;
+  background:rgba(255,255,255,0.85);border:1px solid var(--border);
+  border-radius:100px;font-size:.72rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text-2);
+  margin-bottom:22px;
+  backdrop-filter:blur(8px);
+}
+.hero-pill-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--grad);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,43,26,.4);}50%{box-shadow:0 0 0 6px rgba(212,43,26,0);}}
+
+.hero h1{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(3rem,5.8vw,5.6rem);
+  font-weight:700;line-height:.98;
+  letter-spacing:-.02em;
+  margin-bottom:24px;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--text-2);
+  max-width:420px;line-height:1.75;font-weight:300;
+  margin-bottom:40px;
+}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+.hero-ctas .btn{font-size:.975rem;padding:14px 30px;border-radius:11px;}
+
+/* Right – 3D visual */
+.hero-visual{
+  position:relative;height:520px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* 3D Cube */
+.cube-scene{perspective:1000px;width:260px;height:260px;position:relative;z-index:2;}
+.cube{
+  width:210px;height:210px;
+  position:absolute;top:25px;left:25px;
+  transform-style:preserve-3d;
+  animation:spinCube 20s linear infinite;
+}
+@keyframes spinCube{from{transform:rotateX(18deg) rotateY(0deg);}to{transform:rotateX(18deg) rotateY(360deg);}}
+.cf{position:absolute;width:210px;height:210px;background:transparent;border:1.5px solid;}
+.cf-fr{transform:translateZ(105px);           border-color:rgba(212,43,26,.6);}
+.cf-bk{transform:rotateY(180deg)translateZ(105px);border-color:rgba(20,64,184,.6);}
+.cf-ri{transform:rotateY(90deg)translateZ(105px);  border-color:rgba(180,168,220,.55);}
+.cf-le{transform:rotateY(-90deg)translateZ(105px); border-color:rgba(180,168,220,.55);}
+.cf-tp{transform:rotateX(90deg)translateZ(105px);  border-color:rgba(212,43,26,.3);}
+.cf-bt{transform:rotateX(-90deg)translateZ(105px); border-color:rgba(20,64,184,.3);}
+.cube-in{
+  width:126px;height:126px;
+  position:absolute;top:67px;left:67px;
+  transform-style:preserve-3d;
+  animation:spinCube 20s linear infinite reverse;
+}
+.ci{position:absolute;width:126px;height:126px;background:transparent;border:1px solid;}
+.ci-fr{transform:translateZ(63px);           border-color:rgba(212,43,26,.2);}
+.ci-bk{transform:rotateY(180deg)translateZ(63px); border-color:rgba(20,64,184,.2);}
+.ci-ri{transform:rotateY(90deg)translateZ(63px);  border-color:rgba(180,168,220,.18);}
+.ci-le{transform:rotateY(-90deg)translateZ(63px); border-color:rgba(180,168,220,.18);}
+.ci-tp{transform:rotateX(90deg)translateZ(63px);  border-color:rgba(212,43,26,.1);}
+.ci-bt{transform:rotateX(-90deg)translateZ(63px); border-color:rgba(20,64,184,.1);}
+
+/* Orbit rings */
+.oring{position:absolute;border-radius:50%;border:1px solid;top:50%;left:50%;}
+.or1{width:330px;height:330px;margin:-165px 0 0 -165px;border-color:rgba(212,43,26,.16);animation:spinR 20s linear infinite;}
+.or2{width:420px;height:420px;margin:-210px 0 0 -210px;border-color:rgba(20,64,184,.10);animation:spinR 30s linear infinite reverse;}
+.or3{width:500px;height:500px;margin:-250px 0 0 -250px;border-color:rgba(180,168,220,.08);animation:spinR 40s linear infinite;}
+@keyframes spinR{from{transform:rotateX(74deg) rotateZ(0deg);}to{transform:rotateX(74deg) rotateZ(360deg);}}
+
+/* Floating data cards */
+.fcard{
+  position:absolute;
+  background:rgba(255,255,255,0.94);border:1px solid var(--border);
+  border-radius:13px;padding:14px 18px;
+  box-shadow:var(--sh-card);z-index:3;
+  backdrop-filter:blur(10px);
+}
+.fc-south{bottom:56px;left:4px;animation:fcFloat 7s ease-in-out infinite;}
+.fc-north{top:56px;right:4px;animation:fcFloat 5.5s ease-in-out infinite 1.8s;}
+@keyframes fcFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.fc-lbl{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px;}
+.fc-val{
+  font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;line-height:1;
+  background:var(--grad-bright);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.fc-sub{font-size:.68rem;color:var(--text-3);margin-top:3px;}
+
+/* Floating dots */
+.vd{position:absolute;border-radius:50%;}
+.vd1{width:10px;height:10px;background:var(--red);top:88px;right:56px;animation:fcFloat 4.5s ease-in-out infinite;}
+.vd2{width:7px;height:7px;background:var(--blue);bottom:96px;left:44px;animation:fcFloat 6s ease-in-out infinite 1s;}
+.vd3{width:5px;height:5px;background:#D8D4EC;top:168px;left:16px;animation:fcFloat 3.8s ease-in-out infinite .5s;opacity:.6;}
+
+/* ─── Section heads ─── */
+.s-head{
+  text-align:center;margin-bottom:64px;
+  position:relative;z-index:5;background:var(--bg);
+}
+.s-eye{
+  display:inline-block;
+  font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--red);margin-bottom:12px;
+}
+.s-title{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(2rem,3.6vw,3.1rem);
+  font-weight:700;line-height:1.08;letter-spacing:-.015em;
+  margin-bottom:14px;
+}
+.s-sub{font-size:1rem;color:var(--text-2);max-width:500px;margin:0 auto;font-weight:300;line-height:1.75;}
+
+/* ─── Services scroll section ─── */
+.services-scroll{
+  position:relative;
+  height:400vh;
+  background:var(--bg);
+}
+.services-sticky{
+  position:sticky;
+  top:var(--nav-h);
+  overflow:visible;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  padding:30px 0;
+  transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+/* Mockup column — heading above it stays static (z-index on .s-head) */
+.svc-mockup-col{ display:block; }
+
+/* Step reveal animation — starts collapsed so box grows as steps appear */
+.wf-step-anim{
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  margin-top:0 !important;
+  transform:translateY(-12px);
+  transition:max-height .5s ease, opacity .4s ease, transform .4s ease, margin-top .4s ease;
+}
+.wf-step-anim.step-in{
+  max-height:140px;
+  opacity:1;
+  margin-top:6px !important;
+  transform:translateY(0);
+}
+
+/* ─── Feature / Services block ─── */
+.feature{padding:110px 0;overflow:hidden;}
+.feat-grid{
+  display:grid;grid-template-columns:1.05fr 1fr;
+  gap:72px;align-items:center;
+}
+.feat-eye{
+  display:inline-block;
+  font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--red);margin-bottom:14px;
+}
+.feat-title{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(1.8rem,3vw,2.7rem);
+  font-weight:700;line-height:1.1;letter-spacing:-.02em;
+  margin-bottom:16px;
+}
+.feat-desc{
+  font-size:.96rem;color:var(--text-2);line-height:1.78;
+  max-width:420px;font-weight:300;margin-bottom:28px;
+}
+.feat-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;}
+.feat-tag{
+  padding:5px 12px;font-size:.72rem;font-weight:500;
+  border-radius:100px;background:var(--bg-3);border:1px solid var(--border);color:var(--text-2);
+}
+.feat-cta{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.875rem;font-weight:700;color:var(--text);
+  transition:gap .15s;
+}
+.feat-cta:hover{gap:11px;}
+.feat-cta-arrow{
+  background:var(--grad-bright);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ── Browser mockup ── */
+.mockup{
+  background:white;
+  border-radius:16px;
+  box-shadow:var(--sh-mockup), inset 0 0 0 1px rgba(0,0,0,.08);
+  overflow:hidden;
+}
+.m-bar{
+  height:40px;background:hsl(0 0% 97.5%);
+  border-bottom:1px solid hsl(0 0% 91%);
+  display:flex;align-items:center;padding:0 14px;gap:6px;flex-shrink:0;
+}
+.m-dot{width:11px;height:11px;border-radius:50%;}
+.m-dot:nth-child(1){background:#FF5F57;}
+.m-dot:nth-child(2){background:#FEBC2E;}
+.m-dot:nth-child(3){background:#28C840;}
+.m-url{
+  flex:1;margin:0 12px;height:22px;
+  background:hsl(0 0% 91%);border-radius:5px;
+  display:flex;align-items:center;padding:0 10px;gap:5px;
+}
+.m-url-ico{color:hsl(0 0% 60%);}
+.m-url-txt{font-size:.63rem;font-family:'DM Sans',monospace;color:hsl(0 0% 55%);}
+
+/* Workflow styles */
+.wf-body{padding:18px 16px;background:var(--bg-2);}
+.wf-header{
+  background:white;border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:var(--sh-card);
+}
+.wf-h-title{font-size:.8rem;font-weight:700;}
+.wf-h-badge{
+  padding:3px 10px;border-radius:100px;
+  font-size:.65rem;font-weight:700;
+  background:var(--grad);color:white;
+}
+.wf-steps{display:flex;flex-direction:column;}
+.wf-step{display:flex;align-items:flex-start;gap:10px;position:relative;}
+.wf-step+.wf-step{margin-top:6px;}
+.wf-line{
+  position:absolute;left:15px;top:32px;bottom:-6px;
+  width:2px;background:var(--border);
+}
+.wf-step:last-child .wf-line{display:none;}
+.wf-num{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Rajdhani',sans-serif;font-size:.8rem;font-weight:700;z-index:1;
+}
+.wf-num.done{background:var(--grad);color:white;box-shadow:0 3px 10px rgba(212,43,26,.35);}
+.wf-num.active{background:white;border:2px solid var(--red);color:var(--red);}
+.wf-num.todo{background:white;border:2px solid var(--border);color:var(--text-3);}
+.wf-card{
+  flex:1;background:white;border:1px solid var(--border);
+  border-radius:9px;padding:10px 13px;box-shadow:var(--sh-card);
+}
+.wf-c-title{font-size:.78rem;font-weight:700;margin-bottom:3px;}
+.wf-c-sub{font-size:.68rem;color:var(--text-2);line-height:1.5;}
+.wf-c-meta{display:flex;align-items:center;gap:6px;margin-top:7px;}
+.wf-c-chip{
+  padding:2px 8px;border-radius:4px;font-size:.6rem;font-weight:600;
+  background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);
+}
+.wf-c-chip.red{background:rgba(212,43,26,.08);border-color:rgba(212,43,26,.2);color:var(--red);}
+.wf-c-chip.blue{background:rgba(20,64,184,.08);border-color:rgba(20,64,184,.2);color:var(--blue);}
+
+/* ─── Materials Ticker ─── */
+.materials-ticker{
+  padding:28px 0;
+  background:var(--bg);
+  overflow:hidden;
+  position:relative;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.materials-ticker-track{
+  display:flex;
+  width:max-content;
+  animation:tickerScroll 18s linear infinite;
+}
+.materials-ticker-track:hover{ animation-play-state:paused; }
+.ticker-item{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:0 32px;
+  white-space:nowrap;
+}
+.ticker-name{
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.35rem;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--text);
+}
+.ticker-sep{
+  font-size:1.1rem;
+  font-weight:300;
+  color:var(--border);
+  flex-shrink:0;
+  user-select:none;
+}
+/* fade edges */
+.materials-ticker::before,
+.materials-ticker::after{
+  content:'';
+  position:absolute;
+  top:0; bottom:0;
+  width:140px;
+  z-index:2;
+  pointer-events:none;
+}
+.materials-ticker::before{
+  left:0;
+  background:linear-gradient(to right, var(--bg) 0%, transparent 100%);
+}
+.materials-ticker::after{
+  right:0;
+  background:linear-gradient(to left, var(--bg) 0%, transparent 100%);
+}
+@keyframes tickerScroll{
+  0%  { transform:translateX(0); }
+  100%{ transform:translateX(-25%); }
+}
+
+/* ─── Clients Scatter ─── */
+.clients-scatter{
+  position:relative;
+  height:350vh;
+  background:var(--bg);
+}
+.clients-sticky{
+  position:sticky;
+  top:var(--nav-h);
+  height:calc(100vh - var(--nav-h));
+  overflow:visible;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:1;
+}
+.clients-eyebrow{
+  font-size:.68rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-3);
+  margin-bottom:0;
+  opacity:0;
+  transform:translateY(12px);
+  transition:opacity .6s ease, transform .6s ease;
+  position:relative;z-index:2;
+}
+.clients-eyebrow.in{opacity:1;transform:translateY(0);}
+.clients-title{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(2rem,3.6vw,3.1rem);
+  font-weight:700;line-height:1.1;letter-spacing:-.015em;
+  text-align:center;
+  margin-top:10px;margin-bottom:0;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .6s ease .1s, transform .6s ease .1s;
+  position:relative;z-index:2;
+}
+.clients-title.in{opacity:1;transform:translateY(0);}
+.clients-stage{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+.logo-card{
+  position:absolute;
+  width:160px;
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:0;
+  box-shadow:none;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  opacity:0;
+  will-change:transform,opacity;
+  pointer-events:auto;
+}
+.logo-card img{
+  width:100%;height:72px;
+  object-fit:contain;
+  display:block;
+  filter:drop-shadow(0 4px 12px rgba(12,12,30,.12));
+  transition:filter .25s;
+}
+.logo-card:hover img{filter:drop-shadow(0 8px 24px rgba(12,12,30,.18));}
+.logo-card-name{
+  font-size:.72rem;font-weight:700;letter-spacing:.04em;
+  color:var(--text-3);text-transform:uppercase;text-align:center;
+}
+@keyframes logoFloat{
+  0%,100%{transform:translate(var(--fx,0), calc(var(--fy,0px) + 0px)) rotate(var(--fr,0deg)) scale(1);}
+  30%{transform:translate(var(--fx,0), calc(var(--fy,0px) - 18px)) rotate(calc(var(--fr,0deg) + 2deg)) scale(1.04);}
+  70%{transform:translate(var(--fx,0), calc(var(--fy,0px) - 8px)) rotate(calc(var(--fr,0deg) - 1deg)) scale(1.01);}
+}
+
+/* ─── Pricing ─── */
+.pricing{padding:110px 0;}
+.pricing-cards{
+  display:flex;
+  justify-content:center;
+  gap:48px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+.price-card{
+  width:260px;
+  border-radius:22px;
+  overflow:hidden;
+  transition:transform .35s cubic-bezier(.25,.46,.45,.94), box-shadow .35s ease;
+  flex-shrink:0;
+}
+/* Basic — red glow */
+.price-card.pc-basic{
+  box-shadow:var(--sh-card), 0 0 28px 6px rgba(212,43,26,.24), 0 0 52px 10px rgba(212,43,26,.12);
+}
+.price-card.pc-basic:hover{
+  transform:translateY(-10px);
+  box-shadow:var(--sh-lift), 0 0 40px 10px rgba(212,43,26,.42), 0 0 72px 14px rgba(212,43,26,.20);
+}
+/* Standard — blue glow */
+.price-card.pc-standard{
+  box-shadow:var(--sh-card), 0 0 28px 6px rgba(20,64,184,.24), 0 0 52px 10px rgba(20,64,184,.12);
+}
+.price-card.pc-standard:hover{
+  transform:translateY(-10px);
+  box-shadow:var(--sh-lift), 0 0 40px 10px rgba(20,64,184,.42), 0 0 72px 14px rgba(20,64,184,.20);
+}
+/* Premium (featured) — red left, blue right split glow */
+.price-card.featured{
+  transform:scale(1.04);
+  box-shadow:var(--sh-mockup),
+    -16px 0 30px 4px rgba(212,43,26,.26),
+    -16px 0 52px 8px rgba(212,43,26,.13),
+     16px 0 30px 4px rgba(20,64,184,.26),
+     16px 0 52px 8px rgba(20,64,184,.13);
+}
+.price-card.featured:hover{
+  transform:scale(1.04) translateY(-10px);
+  box-shadow:var(--sh-lift),
+    -20px 0 44px 8px rgba(212,43,26,.42),
+    -20px 0 70px 14px rgba(212,43,26,.20),
+     20px 0 44px 8px rgba(20,64,184,.42),
+     20px 0 70px 14px rgba(20,64,184,.20);
+}
+
+/* ── top gradient header ── */
+.pc-head{
+  padding:28px 24px 46px;
+  position:relative;
+  min-height:210px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.pc-head-basic   {background:linear-gradient(150deg,#D42B1A 0%,#8B1A55 100%);}
+.pc-head-standard{background:linear-gradient(150deg,#0E2F8A 0%,#1440B8 60%,#1A52D4 100%);}
+.pc-head-premium {background:linear-gradient(150deg,#D42B1A 0%,#D8D4EC 50%,#1440B8 100%);}
+
+.pc-tier{
+  font-family:'Rajdhani',sans-serif;
+  font-size:.78rem;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.82);
+}
+.pc-offer{
+  font-family:'Rajdhani',sans-serif;
+  font-size:2.1rem;font-weight:700;line-height:1.05;
+  text-align:center;
+  color:#FFFFFF;
+  letter-spacing:-.01em;
+}
+.pc-sub{
+  font-size:.72rem;font-weight:500;
+  color:rgba(255,255,255,.72);
+  text-align:center;
+  margin-bottom:0;
+}
+
+/* wave SVG divider */
+.pc-wave{
+  display:block;
+  width:100%;
+  margin-top:-44px;
+  fill:#1A1A2E;
+  position:relative;
+  z-index:1;
+}
+
+/* ── dark feature body ── */
+.pc-body{
+  background:#1A1A2E;
+  padding:20px 24px 28px;
+  position:relative;
+  z-index:1;
+  margin-top:-1px;
+}
+.pc-features{
+  list-style:none;
+  display:flex;flex-direction:column;gap:11px;
+  margin-bottom:0;
+}
+.pc-features li{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:.82rem;font-weight:400;
+  color:rgba(255,255,255,.8);
+  line-height:1.4;
+}
+.pc-check{
+  flex-shrink:0;
+  width:16px;height:16px;
+  margin-top:1px;
+  background:linear-gradient(135deg,var(--red),var(--blue));
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.pc-check svg{display:block;}
+.pc-note{
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.1);
+  font-size:.72rem;font-weight:600;
+  color:rgba(255,255,255,.5);
+  text-align:center;
+  letter-spacing:.04em;
+}
+.pc-note strong{
+  background:var(--grad-bright);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-weight:700;
+}
+
+/* ─── Contact ─── */
+.contact{
+  padding:110px 0;
+  background:var(--bg-2);
+  border-top:1px solid var(--border);
+}
+.contact-grid{
+  display:grid;grid-template-columns:1fr 1.25fr;
+  gap:80px;align-items:start;
+}
+.contact-left h2{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(1.8rem,3vw,2.7rem);
+  font-weight:700;line-height:1.1;letter-spacing:-.02em;
+  margin-bottom:16px;
+}
+.contact-left p{
+  font-size:.96rem;color:var(--text-2);line-height:1.78;font-weight:300;margin-bottom:36px;
+}
+.contact-info{display:flex;flex-direction:column;gap:18px;margin-top:36px;}
+.contact-info-item{display:flex;align-items:flex-start;gap:14px;}
+.contact-info-icon{
+  width:42px;height:42px;border-radius:11px;
+  background:white;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;flex-shrink:0;box-shadow:var(--sh-card);
+}
+.contact-info-label{font-size:.875rem;font-weight:600;color:var(--text);}
+.contact-info-sub{font-size:.75rem;color:var(--text-3);margin-top:1px;}
+
+/* Form card */
+.contact-form{
+  background:white;border:1px solid var(--border);
+  border-radius:20px;padding:40px;
+  box-shadow:var(--sh-card);
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-group{margin-bottom:16px;}
+.form-label{
+  display:block;font-size:.78rem;font-weight:700;
+  letter-spacing:.04em;color:var(--text);margin-bottom:7px;
+}
+.form-label span{font-weight:400;color:var(--text-3);}
+.form-input,.form-textarea{
+  width:100%;padding:12px 16px;
+  font-family:'DM Sans',sans-serif;font-size:.9rem;
+  color:var(--text);background:var(--bg-2);
+  border:1.5px solid var(--border);border-radius:10px;
+  outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.form-input:focus,.form-textarea:focus{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(212,43,26,.1);
+  background:white;
+}
+.form-textarea{resize:vertical;min-height:100px;}
+
+/* File upload */
+.file-upload{
+  width:100%;
+  border:2px dashed var(--border);border-radius:12px;
+  padding:28px 24px;text-align:center;
+  cursor:pointer;transition:all .2s;
+  background:var(--bg-2);
+  position:relative;margin-bottom:20px;
+}
+.file-upload:hover,.file-upload.drag-over{
+  border-color:var(--red);
+  background:rgba(212,43,26,.03);
+}
+.file-upload input[type="file"]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;
+  width:100%;height:100%;
+}
+.fu-icon{
+  width:42px;height:42px;margin:0 auto 12px;
+  background:var(--grad);border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+}
+.fu-text{font-size:.875rem;font-weight:600;color:var(--text);margin-bottom:4px;}
+.fu-sub{font-size:.75rem;color:var(--text-3);margin-bottom:12px;}
+.fu-formats{display:flex;justify-content:center;flex-wrap:wrap;gap:5px;}
+.fu-fmt{
+  padding:3px 9px;font-size:.63rem;font-weight:700;
+  border-radius:100px;background:white;
+  border:1px solid var(--border);color:var(--text-2);
+  letter-spacing:.03em;
+}
+.file-list{display:none;margin-bottom:16px;}
+.file-list-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;background:var(--bg-2);
+  border-radius:8px;margin-bottom:6px;
+  border:1px solid var(--border);
+  font-size:.8rem;
+}
+.fli-name{font-weight:500;color:var(--text);}
+.fli-size{color:var(--text-3);font-size:.72rem;margin-left:6px;}
+.fli-remove{
+  background:none;border:none;cursor:pointer;
+  color:var(--text-3);font-size:1rem;line-height:1;
+  transition:color .15s;padding:0 2px;
+}
+.fli-remove:hover{color:var(--red);}
+
+.form-submit{
+  width:100%;padding:14px;
+  background:var(--grad);color:white;
+  border:none;border-radius:11px;
+  font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(212,43,26,.30);
+  transition:all .2s;
+}
+.form-submit:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 8px 28px rgba(212,43,26,.40);}
+.form-submit:disabled{opacity:.65;transform:none;cursor:default;}
+
+/* ─── Footer ─── */
+footer{
+  background:var(--text);
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:64px 0 36px;
+}
+.footer-top{
+  display:grid;grid-template-columns:2fr 1fr 1.1fr;
+  gap:64px;margin-bottom:56px;
+}
+.footer-logo img{height:30px;filter:brightness(0) invert(1);opacity:.85;margin-bottom:16px;}
+.footer-desc{font-size:.82rem;color:rgba(255,255,255,.38);line-height:1.7;max-width:250px;}
+.f-title{font-size:.67rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:16px;}
+.f-links{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.f-links a{font-size:.82rem;color:rgba(255,255,255,.48);transition:color .15s;}
+.f-links a:hover{color:rgba(255,255,255,.88);}
+.f-link-icon{display:flex;align-items:center;gap:8px;}
+.footer-bot{
+  border-top:1px solid rgba(255,255,255,.07);
+  padding-top:24px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+}
+.footer-copy{font-size:.75rem;color:rgba(255,255,255,.26);}
+.footer-legal{display:flex;gap:20px;}
+.footer-legal a{font-size:.75rem;color:rgba(255,255,255,.26);transition:color .15s;}
+.footer-legal a:hover{color:rgba(255,255,255,.6);}
+
+/* ─── Scroll fade ─── */
+.fade{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+.fade.in{opacity:1;transform:translateY(0);}
+
+/* ─── Responsive ─── */
+@media(max-width:1024px){
+  .footer-top{grid-template-columns:1fr 1fr;}
+  .hero-inner{gap:80px;}
+  .pricing-cards{gap:32px;}
+}
+@media(max-width:860px){
+  .nav-links{display:none;}
+  .hero-inner{grid-template-columns:1fr;text-align:center;gap:40px;padding:40px 0 64px;}
+  .hero-sub{margin-left:auto;margin-right:auto;}
+  .hero-ctas{justify-content:center;}
+  .hero-visual{height:340px;}
+  .feat-grid{grid-template-columns:1fr;gap:40px;}
+  .feat-desc{max-width:100%;}
+  .contact-grid{grid-template-columns:1fr;gap:48px;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+  /* pricing cards stack */
+  .pricing-cards{flex-direction:column;align-items:center;gap:40px;}
+  .price-card{width:100%;max-width:340px;}
+  .price-card.featured{transform:scale(1);}
+  .price-card.featured:hover{transform:translateY(-10px);}
+  /* services section */
+  .services-scroll{height:auto;}
+  .services-sticky{position:relative;top:auto;}
+  .wf-step-anim{opacity:1;transform:none;}
+}
+@media(max-width:560px){
+  .container{padding:0 20px;}
+  .footer-top{grid-template-columns:1fr;}
+  .hero-ctas{flex-direction:column;align-items:stretch;}
+  .hero-ctas .btn{justify-content:center;}
+  .fcard{display:none;}
+  .clients-title{font-size:1.6rem;}
+  .pricing{padding:70px 0;}
+  .price-card{max-width:100%;}
+  .pc-offer{font-size:1.7rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="nav" id="nav">
+  <div class="nav-pill">
+    <a href="#" class="nav-logo">
+      <img src="Materijali/dizajn 12.png" alt="CROrix">
+    </a>
+    <div style="flex:1;"></div>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#clients">Clients</a></li>
+      <li><a href="#pricing">Plans</a></li>
+    </ul>
+    <div class="nav-right" style="margin-left:8px;">
+      <a href="#contact" class="nav-quote">Contact us</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="hero">
+
+  <!-- Grid layer 1: dim, always visible, scrolling -->
+  <div class="hero-grid-layer" id="hero-grid-bg">
+    <svg class="grid-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-bg-pat" class="scroll-pattern" width="40" height="40"
+                 patternUnits="userSpaceOnUse" x="0" y="0">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#D42B1A" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-bg-pat)"/>
+    </svg>
+  </div>
+
+  <!-- Grid layer 2: bright, revealed by mouse flashlight -->
+  <div class="hero-grid-layer" id="hero-grid-active">
+    <svg class="grid-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-active-pat" class="scroll-pattern" width="40" height="40"
+                 patternUnits="userSpaceOnUse" x="0" y="0">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#D42B1A" stroke-width="1.5"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-active-pat)"/>
+    </svg>
+  </div>
+
+  <!-- Glow blobs -->
+  <div class="hero-glow glow-b"></div>
+
+  <div class="container">
+    <div class="hero-inner">
+
+      <!-- Left: text -->
+      <div>
+        <div class="hero-pill-badge">
+          <span class="hero-pill-dot"></span>
+          3D Studio — Croatia
+        </div>
+        <h1>
+          From<br>
+          <span class="grad-text">Concept</span><br>
+          to Reality
+        </h1>
+        <p class="hero-sub">
+          Broken part, custom fit, new idea — we solve it in 3D.
+        </p>
+        <div class="hero-ctas">
+          <a href="#contact" class="btn btn-grad">Start Your Project →</a>
+          <a href="#pricing" class="btn btn-outline">View Plans</a>
+        </div>
+      </div>
+
+      <!-- Right: spinning 3D model -->
+      <div class="hero-visual" id="hero-visual">
+        <div class="fcard fc-north">
+          <div class="fc-lbl">Prototypes</div>
+          <div class="fc-val">Production parts</div>
+          <div class="fc-sub">Everything in between</div>
+        </div>
+        <div class="fcard fc-south">
+          <div class="fc-lbl">No Minimums</div>
+          <div class="fc-val">1 to 100+ parts</div>
+          <div class="fc-sub">Up to you</div>
+        </div>
+
+        <canvas id="model-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
+        <div class="vd vd1"></div>
+        <div class="vd vd2"></div>
+        <div class="vd vd3"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SERVICES ══════════ -->
+<section class="services-scroll" id="services">
+  <div class="services-sticky">
+    <div class="container">
+
+      <div class="s-head fade" style="margin-bottom:32px;">
+        <span class="s-eye">Our Services</span>
+        <h2 class="s-title">From Idea to Finished Part</h2>
+        <p class="s-sub">Every project follows a clear, transparent process — we keep you posted, every step of the way.</p>
+      </div>
+
+      <div class="feat-grid" style="align-items:start;">
+
+        <!-- Left: workflow mockup — JS shifts this column up as steps appear -->
+        <div class="svc-mockup-col">
+          <div class="mockup">
+            <div class="m-bar">
+              <div class="m-dot"></div><div class="m-dot"></div><div class="m-dot"></div>
+              <div class="m-url">
+                <svg class="m-url-ico" width="8" height="8" viewBox="0 0 8 8" fill="none">
+                  <path d="M4 1a3 3 0 100 6A3 3 0 004 1z" stroke="currentColor" stroke-width="1"/>
+                </svg>
+                <span class="m-url-txt">crorix.com/project/tracker</span>
+              </div>
+            </div>
+            <div class="wf-body">
+              <div class="wf-header">
+                <div>
+                  <div class="wf-h-title">Your Project — Live Tracker</div>
+                  <div style="font-size:.65rem;color:var(--text-3);margin-top:2px;">Full visibility from idea to delivery</div>
+                </div>
+                <div class="wf-h-badge">In Progress</div>
+              </div>
+              <div class="wf-steps" id="wfSteps">
+                <div class="wf-step wf-step-anim">
+                  <div class="wf-line"></div>
+                  <div class="wf-num done">✓</div>
+                  <div class="wf-card">
+                    <div class="wf-c-title">Idea & Quote</div>
+                    <div class="wf-c-sub">Share your files, sketches or ideas. Detailed quote within 24h.</div>
+                    <div class="wf-c-meta"><span class="wf-c-chip red">Completed</span><span class="wf-c-chip">Mon 09:40</span></div>
+                  </div>
+                </div>
+                <div class="wf-step wf-step-anim">
+                  <div class="wf-line"></div>
+                  <div class="wf-num done">✓</div>
+                  <div class="wf-card">
+                    <div class="wf-c-title">3D Modeling & Optimization</div>
+                    <div class="wf-c-sub">Parametric CAD, organic sculpting or mesh repair — print-ready output.</div>
+                    <div class="wf-c-meta"><span class="wf-c-chip red">Completed</span><span class="wf-c-chip">Mon 14:20</span></div>
+                  </div>
+                </div>
+                <div class="wf-step wf-step-anim">
+                  <div class="wf-line"></div>
+                  <div class="wf-num active">3</div>
+                  <div class="wf-card">
+                    <div class="wf-c-title">Printing — FDM</div>
+                    <div class="wf-c-sub">6 materials. Precision-tuned machines. Your part, on time.</div>
+                    <div class="wf-c-meta"><span class="wf-c-chip blue">Printing</span><span class="wf-c-chip">~65% done</span></div>
+                  </div>
+                </div>
+                <div class="wf-step wf-step-anim">
+                  <div class="wf-line"></div>
+                  <div class="wf-num todo">4</div>
+                  <div class="wf-card">
+                    <div class="wf-c-title">Post-Processing & QA</div>
+                    <div class="wf-c-sub">Support removal, sanding, painting. Dimensional inspection before shipping.</div>
+                    <div class="wf-c-meta"><span class="wf-c-chip">Scheduled Wed</span></div>
+                  </div>
+                </div>
+                <div class="wf-step wf-step-anim">
+                  <div class="wf-num todo">5</div>
+                  <div class="wf-card">
+                    <div class="wf-c-title">Delivery & Support</div>
+                    <div class="wf-c-sub">Secure packaging, fast shipping. We make it right — guaranteed.</div>
+                    <div class="wf-c-meta"><span class="wf-c-chip">Pending</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: text -->
+        <div class="fade">
+          <span class="feat-eye">End-to-End Service</span>
+          <h2 class="feat-title">Everything you need,<br><span class="grad-text">under one roof.</span></h2>
+          <p class="feat-desc">Sketch, file or just an idea — we take it from there. Modeled, printed and delivered with full precision.</p>
+          <div class="feat-tags">
+            <span class="feat-tag">Custom 3D Modeling</span>
+            <span class="feat-tag">Reverse Engineering</span>
+            <span class="feat-tag">FDM Printing</span>
+            <span class="feat-tag">Post-Processing</span>
+            <span class="feat-tag">Material Variety</span>
+            <span class="feat-tag">Shipping Across Europe</span>
+          </div>
+          <a href="#contact" class="feat-cta">Start your project <span class="feat-cta-arrow">→</span></a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CLIENTS ══════════ -->
+<section class="clients-scatter" id="clients">
+  <div class="clients-sticky" id="clientsSticky">
+
+    <!-- Text heading -->
+    <div class="clients-eyebrow" id="clientsEyebrow">Trusted by teams across industries</div>
+    <div class="clients-title" id="clientsTitle">Our Clients</div>
+
+    <!-- Stage where cards live -->
+    <div class="clients-stage" id="clientsStage">
+
+      <div class="logo-card" id="lc-bambu">
+        <img src="Materijali/bambu lab logo.png" alt="Bambu Lab">
+        <span class="logo-card-name">Bambu Lab</span>
+      </div>
+
+      <div class="logo-card" id="lc-fusio">
+        <img src="Materijali/Fusio logo.png" alt="Fusion 360">
+        <span class="logo-card-name">Fusion 360</span>
+      </div>
+
+      <div class="logo-card" id="lc-fsb">
+        <img src="Materijali/fsb logo.png" alt="FSB">
+        <span class="logo-card-name">FSB Zagreb</span>
+      </div>
+
+      <div class="logo-card" id="lc-flamit">
+        <img src="Materijali/Flamit logo(bez pozadine).png" alt="Flamit">
+        <span class="logo-card-name">Flamit</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MATERIALS TICKER ══════════ -->
+<section class="materials-ticker" aria-label="Materials we print with">
+  <div class="materials-ticker-track">
+    <!-- set 1 -->
+    <div class="ticker-item"><span class="ticker-name">PLA</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">ABS</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">ASA</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">PETG</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">TPU</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">PA6</span><span class="ticker-sep">/</span></div>
+    <!-- set 2 -->
+    <div class="ticker-item"><span class="ticker-name">PLA</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">ABS</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">ASA</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">PETG</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">TPU</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">PA6</span><span class="ticker-sep">/</span></div>
+    <!-- set 3 -->
+    <div class="ticker-item"><span class="ticker-name">PLA</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">ABS</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">ASA</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">PETG</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">TPU</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">PA6</span><span class="ticker-sep">/</span></div>
+    <!-- set 4 (mirror of sets 1-3, loop snaps back here seamlessly) -->
+    <div class="ticker-item"><span class="ticker-name">PLA</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">ABS</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">ASA</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">PETG</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">TPU</span><span class="ticker-sep">/</span></div>
+    <div class="ticker-item"><span class="ticker-name">PA6</span><span class="ticker-sep">/</span></div>
+  </div>
+</section>
+
+<!-- ══════════ PRICING ══════════ -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="s-head fade">
+      <span class="s-eye">Plans</span>
+      <h2 class="s-title">Choose Your Plan</h2>
+      <p class="s-sub">Not every project is the same. Pick what works for you.</p>
+    </div>
+
+    <div class="pricing-cards fade">
+
+      <!-- ── BASIC ── -->
+      <div class="price-card pc-basic">
+        <div class="pc-head pc-head-basic">
+          <div class="pc-tier">Basic</div>
+          <div class="pc-offer">CUSTOM<br>OFFER</div>
+          <div class="pc-sub">per print / per part</div>
+        </div>
+        <svg class="pc-wave" viewBox="0 0 260 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,0 C65,36 195,0 260,28 L260,36 L0,36 Z"/>
+        </svg>
+        <div class="pc-body">
+          <ul class="pc-features">
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>File provided by client</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Standard FDM printing</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>All materials included</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ── PREMIUM (featured / middle) ── -->
+      <div class="price-card featured">
+        <div class="pc-head pc-head-premium">
+          <div class="pc-tier">Premium</div>
+          <div class="pc-offer">CUSTOM<br>OFFER</div>
+          <div class="pc-sub">full service / per project</div>
+        </div>
+        <svg class="pc-wave" viewBox="0 0 260 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,0 C65,36 195,0 260,28 L260,36 L0,36 Z"/>
+        </svg>
+        <div class="pc-body">
+          <ul class="pc-features">
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Full design consultation</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Complex 3D modeling</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>All materials included</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Unlimited revisions</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Full post-processing &amp; finishing if needed</li>
+          </ul>
+          <div class="pc-note">All prices are <strong>custom quoted</strong> — contact us for an offer</div>
+        </div>
+      </div>
+
+      <!-- ── STANDARD (right) ── -->
+      <div class="price-card pc-standard">
+        <div class="pc-head pc-head-standard">
+          <div class="pc-tier">Standard</div>
+          <div class="pc-offer">CUSTOM<br>OFFER</div>
+          <div class="pc-sub">per project / per part</div>
+        </div>
+        <svg class="pc-wave" viewBox="0 0 260 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,0 C65,36 195,0 260,28 L260,36 L0,36 Z"/>
+        </svg>
+        <div class="pc-body">
+          <ul class="pc-features">
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>3D modeling from reference</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Standard FDM printing</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>All materials included</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>1 revision round</li>
+            <li><span class="pc-check"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Basic post-processing</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CONTACT ══════════ -->
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+
+      <!-- Left: info -->
+      <div class="fade">
+        <span class="feat-eye">Get in Touch</span>
+        <h2>Let's build<br><span class="grad-text">something great.</span></h2>
+        <p>Send your project details, CAD files, or even just a rough sketch. We analyze your request and reply within 24 hours with a detailed quote and timeline.</p>
+        <div class="contact-info">
+          <div class="contact-info-item">
+            <div class="contact-info-icon">📧</div>
+            <div>
+              <div class="contact-info-label">crorix@outlook.com</div>
+              <div class="contact-info-sub">We reply within 24 hours</div>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></div>
+            <div>
+              <div class="contact-info-label">Instagram</div>
+              <div class="contact-info-sub">Follow us for updates</div>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon">📍</div>
+            <div>
+              <div class="contact-info-label">Zagreb, Croatia</div>
+              <div class="contact-info-sub">Shipping Across Europe</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: form -->
+      <div class="fade" style="transition-delay:.12s">
+        <div class="contact-form">
+          <div class="form-row">
+            <div>
+              <label class="form-label" for="fname">First Name</label>
+              <input class="form-input" type="text" id="fname" placeholder="Marko">
+            </div>
+            <div>
+              <label class="form-label" for="lname">Last Name</label>
+              <input class="form-input" type="text" id="lname" placeholder="Kovačić">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="femail">Email</label>
+            <input class="form-input" type="email" id="femail" placeholder="marko@company.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fmessage">Project Description</label>
+            <textarea class="form-textarea" id="fmessage" placeholder="Tell us about your project — dimensions, material preferences, quantity, deadline..."></textarea>
+          </div>
+
+          <!-- File upload -->
+          <label class="form-label">Attach Model Files <span>(optional)</span></label>
+          <div class="file-upload" id="fileUploadZone">
+            <input type="file" id="fileInput" accept=".stl,.obj,.step,.stp,.3mf,.iges,.igs,.fbx" multiple>
+            <div class="fu-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <div class="fu-text">Drop your 3D model files here</div>
+            <div class="fu-sub">or click to browse</div>
+            <div class="fu-formats">
+              <span class="fu-fmt">STL</span>
+              <span class="fu-fmt">OBJ</span>
+              <span class="fu-fmt">STEP</span>
+              <span class="fu-fmt">3MF</span>
+              <span class="fu-fmt">IGES</span>
+              <span class="fu-fmt">FBX</span>
+            </div>
+          </div>
+          <div class="file-list" id="fileList"></div>
+
+          <button class="form-submit" id="formSubmit">Send →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo"><img src="Materijali/dizajn 12.png" alt="CROrix"></div>
+        <p class="footer-desc">3D modeling and printing based in Zagreb, Croatia. Broken part, custom fit or new idea — we solve it in 3D.</p>
+      </div>
+      <div>
+        <div class="f-title">Services</div>
+        <ul class="f-links">
+          <li><a href="#services">3D Modeling</a></li>
+          <li><a href="#services">Prototyping</a></li>
+          <li><a href="#services">FDM Printing</a></li>
+          <li><a href="#services">Post-Processing</a></li>
+          <li><a href="#services">Reverse Engineering</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="f-title">Contact</div>
+        <ul class="f-links">
+          <li><a href="mailto:crorix@outlook.com" class="f-link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>crorix@outlook.com</a></li>
+          <li><a href="#" class="f-link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>Instagram</a></li>
+          <li><span class="f-link-icon" style="font-size:.82rem;color:rgba(255,255,255,.48);display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Zagreb, Croatia</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <span class="footer-copy">© 2025 CROrix. All rights reserved.</span>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ══ Infinite grid animation ══ */
+(function(){
+  const hero       = document.getElementById('hero');
+  const patterns   = document.querySelectorAll('.scroll-pattern');
+  const activeGrid = document.getElementById('hero-grid-active');
+  const GRID_SIZE  = 40;
+  const SPEED      = 0.35;
+  let gx = 0, gy = 0;
+
+  document.addEventListener('mousemove', function(e){
+    var r  = hero.getBoundingClientRect();
+    var mx = e.clientX - r.left;
+    var my = e.clientY - r.top;
+    if(mx >= 0 && my >= 0 && mx <= r.width && my <= r.height){
+      /* Combine flashlight with bottom fade — intersect means both must be opaque to show */
+      var flash = 'radial-gradient(340px circle at ' + mx + 'px ' + my + 'px, black 0%, transparent 100%)';
+      var fade  = 'linear-gradient(to bottom, black 70%, transparent 100%)';
+      activeGrid.style.webkitMaskImage = flash + ', ' + fade;
+      activeGrid.style.webkitMaskComposite = 'source-in';
+      activeGrid.style.maskImage = flash + ', ' + fade;
+      activeGrid.style.maskComposite = 'intersect';
+    }
+    /* Outside hero bounds: mask stays frozen at last position */
+  });
+
+  function frame(){
+    gx = (gx + SPEED) % GRID_SIZE;
+    gy = (gy + SPEED) % GRID_SIZE;
+    for(var i = 0; i < patterns.length; i++){
+      patterns[i].setAttribute('x', gx);
+      patterns[i].setAttribute('y', gy);
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ══ Scroll fade ══ */
+const io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, {threshold: .08, rootMargin: '0px 0px -24px 0px'});
+document.querySelectorAll('.fade').forEach(function(el){ io.observe(el); });
+
+/* ══ Services step reveal ══ */
+(function(){
+  var section  = document.getElementById('services');
+  var sticky   = section.querySelector('.services-sticky');
+  var steps    = document.querySelectorAll('.wf-step-anim');
+  var N        = steps.length;
+  var revealed = 0;
+  var lastIdx  = -1;
+
+  /* Shift the WHOLE sticky panel (heading + box together) upward per step,
+     so the heading and box never overlap each other.
+     Hero z-index:2 covers any overshoot into hero territory on scroll-up.
+     55px per step × 4 steps = 220px max, enough to keep last step in view. */
+  var STEP_SHIFT = 55;
+
+  function update(){
+    var sRect   = section.getBoundingClientRect();
+    var sHeight = section.offsetHeight;
+    var vHeight = window.innerHeight;
+    var sTop    = window.scrollY + sRect.top;
+    var range   = sHeight - vHeight;
+    var raw     = (window.scrollY - sTop) / range;
+    var p       = Math.max(0, Math.min(1, raw));
+
+    var stepIdx = Math.min(Math.floor(p * N), N - 1);
+
+    /* Reveal steps forward only — steps stay revealed on scroll-up */
+    for(var i = 0; i <= stepIdx; i++){
+      if(!steps[i].classList.contains('step-in')){
+        (function(el, delay){
+          setTimeout(function(){ el.classList.add('step-in'); }, delay);
+        })(steps[i], (i - revealed) * 80);
+        revealed = Math.max(revealed, i + 1);
+      }
+    }
+
+    /* Shift entire sticky panel up as steps appear, reset on scroll-up */
+    if(stepIdx !== lastIdx){
+      var shift = Math.max(0, stepIdx) * STEP_SHIFT;
+      sticky.style.transform = 'translateY(-' + shift + 'px)';
+      lastIdx = stepIdx;
+    }
+  }
+
+  window.addEventListener('scroll', update, {passive:true});
+  update();
+})();
+
+/* ══ Clients scatter animation ══ */
+(function(){
+  var section = document.getElementById('clients');
+  var eyebrow = document.getElementById('clientsEyebrow');
+  var title   = document.getElementById('clientsTitle');
+  var cards   = [
+    document.getElementById('lc-bambu'),
+    document.getElementById('lc-fusio'),
+    document.getElementById('lc-fsb'),
+    document.getElementById('lc-flamit')
+  ];
+
+  var finalPos = [
+    [-340,  -90, -4],
+    [ -80,  190,  2],
+    [ 260,  -70,  5],
+    [ 420,   80, -3]
+  ];
+
+  function easeOut(t){ return 1 - Math.pow(1 - t, 3); }
+  function lerp(a, b, t){ return a + (b - a) * t; }
+
+  var headObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        eyebrow.classList.add('in');
+        title.classList.add('in');
+        headObs.unobserve(section);
+      }
+    });
+  }, {threshold: 0.05});
+  headObs.observe(section);
+
+  /* p is updated by scroll; rAF loop reads it every frame */
+  var p = 0;
+  var done = false;
+
+  window.addEventListener('scroll', function(){
+    if(done) return;
+    var sRect  = section.getBoundingClientRect();
+    var sTop   = window.scrollY + sRect.top;
+    var room   = section.offsetHeight - window.innerHeight;
+    var raw    = (window.scrollY - sTop) / room;
+    p = Math.max(0, Math.min(1, raw));
+    if(p >= 1) done = true;
+  }, {passive:true});
+
+  /* rAF loop: applies scatter + continuous float every frame */
+  (function frame(){
+    requestAnimationFrame(frame);
+    var ep = easeOut(p);
+    var t  = performance.now() / 1000;
+
+    cards.forEach(function(card, i){
+      var fx = finalPos[i][0];
+      var fy = finalPos[i][1];
+      var fr = finalPos[i][2];
+
+      var x = lerp(0, fx, ep);
+      var y = lerp(0, fy, ep);
+      var r = lerp(0, fr, ep);
+      var s = lerp(0.55, 1, ep);
+      var o = Math.min(1, ep * 2);
+
+      /* Float grows in as ep increases — zero while still bunched, full when scattered */
+      var floatY = ep * 13 * Math.sin(t * 1.1 + i * 2.1);
+      var floatR = ep * 1.5 * Math.sin(t * 0.85 + i * 1.7);
+
+      card.style.transform = 'translate(' + x + 'px,' + (y + floatY) + 'px) rotate(' + (r + floatR) + 'deg) scale(' + s + ')';
+      card.style.opacity   = o;
+    });
+  })();
+})();
+
+/* ══ Smooth scroll ══ */
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click', function(e){
+    const target = document.querySelector(a.getAttribute('href'));
+    if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth',block:'start'}); }
+  });
+});
+
+/* ══ File upload ══ */
+(function(){
+  const zone    = document.getElementById('fileUploadZone');
+  const input   = document.getElementById('fileInput');
+  const list    = document.getElementById('fileList');
+  let files     = [];
+
+  function render(){
+    if(files.length === 0){ list.style.display = 'none'; return; }
+    list.style.display = 'block';
+    list.innerHTML = files.map(function(f, i){
+      return '<div class="file-list-item">'
+        + '<span><span class="fli-name">📄 ' + f.name + '</span>'
+        + '<span class="fli-size">(' + (f.size/1024).toFixed(1) + ' KB)</span></span>'
+        + '<button class="fli-remove" onclick="window.__removeFile(' + i + ')">✕</button>'
+        + '</div>';
+    }).join('');
+  }
+
+  window.__removeFile = function(i){
+    files.splice(i, 1);
+    render();
+  };
+
+  function add(newFiles){
+    Array.from(newFiles).forEach(function(f){
+      if(!files.find(function(u){ return u.name === f.name; })) files.push(f);
+    });
+    render();
+  }
+
+  input.addEventListener('change', function(){ add(input.files); });
+  zone.addEventListener('dragover',  function(e){ e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', function(){  zone.classList.remove('drag-over'); });
+  zone.addEventListener('drop',      function(e){
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    add(e.dataTransfer.files);
+  });
+})();
+
+/* ══ Form submit ══ */
+document.getElementById('formSubmit').addEventListener('click', function(){
+  const btn      = this;
+  const fname    = document.getElementById('fname').value.trim();
+  const lname    = document.getElementById('lname').value.trim();
+  const emailEl  = document.getElementById('femail');
+  const message  = document.getElementById('fmessage').value.trim();
+
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())){
+    emailEl.style.borderColor = '#D42B1A';
+    emailEl.focus();
+    setTimeout(function(){ emailEl.style.borderColor = ''; }, 1500);
+    return;
+  }
+
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  const data = new FormData();
+  data.append('name',    fname + ' ' + lname);
+  data.append('email',   emailEl.value.trim());
+  data.append('message', message);
+
+  // Attach files if any
+  const fileInput = document.getElementById('fileInput');
+  if(fileInput.files.length){
+    Array.from(fileInput.files).forEach(function(f){ data.append('attachment', f); });
+  }
+
+  fetch('https://formspree.io/f/xvzdpqqq', {
+    method:  'POST',
+    body:    data,
+    headers: { 'Accept': 'application/json' }
+  })
+  .then(function(res){
+    if(res.ok){
+      btn.textContent      = '✓ Sent! We\'ll be in touch within 24h';
+      btn.style.background = '#28C840';
+    } else {
+      btn.textContent = 'Something went wrong — email us directly';
+      btn.disabled    = false;
+    }
+  })
+  .catch(function(){
+    btn.textContent = 'Something went wrong — email us directly';
+    btn.disabled    = false;
+  });
+});
+</script>
+
+<script type="module">
+import * as THREE      from 'three';
+import { STLLoader }   from 'three/addons/loaders/STLLoader.js';
+
+const container = document.getElementById('hero-visual');
+const canvas    = document.getElementById('model-canvas');
+
+/* ── Renderer ── */
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(container.clientWidth, container.clientHeight);
+
+/* ── Scene & camera ── */
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.01, 100);
+camera.position.set(1.2, 2.8, 6.5);
+camera.lookAt(0, 0, 0);
+
+/* ── Lighting ── */
+scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+const key = new THREE.DirectionalLight(0xffffff, 1.8);
+key.position.set(3, 5, 4);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+fill.position.set(-3, 0, 3);
+scene.add(fill);
+const rRim = new THREE.PointLight(0xD42B1A, 1.6, 20);
+rRim.position.set(-5, 2, 1);
+scene.add(rRim);
+const bRim = new THREE.PointLight(0x1440B8, 1.2, 20);
+bRim.position.set(5, -1, -3);
+scene.add(bRim);
+
+/* ── Helpers ── */
+function makeMat() {
+  return new THREE.MeshStandardMaterial({
+    color: 0xEAEAF2, metalness: 0.12, roughness: 0.65,
+    transparent: true, opacity: 1
+  });
+}
+function setOpacity(obj, o) {
+  obj.traverse(c => {
+    if (!c.isMesh) return;
+    (Array.isArray(c.material) ? c.material : [c.material])
+      .forEach(m => { m.transparent = true; m.opacity = o; });
+  });
+}
+function normalize(geo) {
+  /* Center the raw geometry so its bounding box mid-point is at the mesh origin.
+     This ensures the pivot (rotation axis) is exactly at the model's center. */
+  geo.computeBoundingBox();
+  geo.center(); /* moves all vertices so bbox center = (0,0,0) */
+
+  const sz = geo.boundingBox.getSize(new THREE.Vector3());
+  const s  = 2.6 / Math.max(sz.x, sz.y, sz.z);
+
+  const mesh = new THREE.Mesh(geo, makeMat());
+  mesh.scale.setScalar(s);
+
+  /* Tilt the mesh ~38° around X so it sits at a clear angle for the viewer */
+  mesh.rotation.x = 0.65;
+
+  const grp = new THREE.Group();
+  grp.add(mesh);
+  return grp;
+}
+
+/* ── STL models ── */
+const FILES = [
+  'Materijali/blok.STL',
+  'Materijali/vratilo.STL',
+  'Materijali/Bolt.stl',
+  'Materijali/Naocale.stl',
+  'Materijali/Toster%20poluga.stl',
+];
+
+const groups     = new Array(FILES.length).fill(null);
+let   loadedCount = 0;
+const stlLoader  = new STLLoader();
+
+FILES.forEach((path, i) => {
+  stlLoader.load(
+    path,
+    geo => {
+      const grp = normalize(geo);
+      setOpacity(grp, 0);
+      groups[i] = grp;
+      if (++loadedCount === FILES.length) initCycle();
+    },
+    undefined,
+    () => {
+      /* fallback placeholder */
+      const geo = new THREE.TorusKnotGeometry(0.9, 0.28, 128, 16);
+      const grp = normalize(geo);
+      setOpacity(grp, 0);
+      groups[i] = grp;
+      if (++loadedCount === FILES.length) initCycle();
+    }
+  );
+});
+
+/* ── Cycle state ── */
+let current   = 0;
+let nextIdx   = 0;
+let fading    = false;
+let fadeMs    = 0;
+let fadePhase = 0; /* 1 = pop-out current, 2 = pop-in next */
+const POP_OUT = 280; /* ms to scale up + disappear */
+const POP_IN  = 420; /* ms to spring in */
+
+/* easing helpers */
+function easeInQuad(t)  { return t * t; }
+function easeOutBack(t) {
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
+function setScale(obj, s) { if (obj) obj.scale.setScalar(s); }
+
+function initCycle() {
+  setOpacity(groups[0], 1);
+  setScale(groups[0], 1);
+  scene.add(groups[0]);
+  setInterval(() => {
+    if (fading) return;
+    nextIdx = (current + 1) % groups.length;
+    fading = true; fadeMs = performance.now(); fadePhase = 1;
+  }, 6000);
+}
+
+/* ── Animation loop ── */
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+
+  groups.forEach(g => { if (g) g.rotation.y += dt * 0.12; });
+
+  if (fading) {
+    const elapsed = performance.now() - fadeMs;
+
+    if (fadePhase === 1) {
+      /* Pop out: scale up slightly + fade to 0 */
+      const t = Math.min(elapsed / POP_OUT, 1);
+      const e = easeInQuad(t);
+      setOpacity(groups[current], 1 - e);
+      setScale(groups[current], 1 + e * 0.35);
+      if (t >= 1) {
+        scene.remove(groups[current]);
+        setScale(groups[current], 1);
+        /* prep next model: invisible, small */
+        setOpacity(groups[nextIdx], 0);
+        setScale(groups[nextIdx], 0.55);
+        scene.add(groups[nextIdx]);
+        current = nextIdx;
+        fadeMs = performance.now(); fadePhase = 2;
+      }
+    } else {
+      /* Pop in: scale from 0.55 → 1 (with overshoot) + fade to 1 */
+      const t = Math.min(elapsed / POP_IN, 1);
+      const s = 0.55 + easeOutBack(t) * 0.45;
+      setOpacity(groups[current], Math.min(t * 2, 1));
+      setScale(groups[current], s);
+      if (t >= 1) {
+        setOpacity(groups[current], 1);
+        setScale(groups[current], 1);
+        fading = false;
+      }
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+animate();
+
+/* ── Resize ── */
+window.addEventListener('resize', () => {
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  camera.aspect = container.clientWidth / container.clientHeight;
+  camera.updateProjectionMatrix();
+});
+</script>
+</body>
+</html>
