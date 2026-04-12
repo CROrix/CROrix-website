@@ -945,6 +945,10 @@ footer{
   .price-card{width:100%;max-width:340px;}
   .price-card.featured{transform:scale(1);}
   .price-card.featured:hover{transform:translateY(-10px);}
+  /* reorder: Basic → Standard → Premium */
+  .price-card.pc-basic{order:1;}
+  .price-card.pc-standard{order:2;}
+  .price-card.featured{order:3;}
 }
 @media(max-width:560px){
   .container{padding:0 20px;}
