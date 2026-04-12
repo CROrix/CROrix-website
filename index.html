@@ -1449,21 +1449,23 @@ footer{
   const SPEED      = 0.35;
   let gx = 0, gy = 0;
 
-  document.addEventListener('mousemove', function(e){
-    var r  = hero.getBoundingClientRect();
-    var mx = e.clientX - r.left;
-    var my = e.clientY - r.top;
-    if(mx >= 0 && my >= 0 && mx <= r.width && my <= r.height){
-      /* Combine flashlight with bottom fade — intersect means both must be opaque to show */
-      var flash = 'radial-gradient(340px circle at ' + mx + 'px ' + my + 'px, black 0%, transparent 100%)';
-      var fade  = 'linear-gradient(to bottom, black 70%, transparent 100%)';
-      activeGrid.style.webkitMaskImage = flash + ', ' + fade;
-      activeGrid.style.webkitMaskComposite = 'source-in';
-      activeGrid.style.maskImage = flash + ', ' + fade;
-      activeGrid.style.maskComposite = 'intersect';
-    }
-    /* Outside hero bounds: mask stays frozen at last position */
-  });
+  if(window.matchMedia('(hover:hover)').matches){
+    document.addEventListener('mousemove', function(e){
+      var r  = hero.getBoundingClientRect();
+      var mx = e.clientX - r.left;
+      var my = e.clientY - r.top;
+      if(mx >= 0 && my >= 0 && mx <= r.width && my <= r.height){
+        /* Combine flashlight with bottom fade — intersect means both must be opaque to show */
+        var flash = 'radial-gradient(340px circle at ' + mx + 'px ' + my + 'px, black 0%, transparent 100%)';
+        var fade  = 'linear-gradient(to bottom, black 70%, transparent 100%)';
+        activeGrid.style.webkitMaskImage = flash + ', ' + fade;
+        activeGrid.style.webkitMaskComposite = 'source-in';
+        activeGrid.style.maskImage = flash + ', ' + fade;
+        activeGrid.style.maskComposite = 'intersect';
+      }
+      /* Outside hero bounds: mask stays frozen at last position */
+    });
+  }
 
   function frame(){
     gx = (gx + SPEED) % GRID_SIZE;
