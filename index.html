@@ -929,7 +929,10 @@ footer{
   .pricing-cards{gap:32px;}
 }
 @media(max-width:860px){
-  .services-scroll{height:120vh;}
+  .services-scroll{height:auto;}
+  .services-sticky{position:relative;top:0;}
+  .wf-step-anim{max-height:none;opacity:1;transform:translateY(0);}
+  .wf-step+.wf-step .wf-step-anim{margin-top:6px;}
   .clients-scatter{height:150vh;}
   .feature{padding:48px 0;}
   .nav-links{display:none;}
@@ -1528,6 +1531,13 @@ window.addEventListener('scroll', function(){
   var revealed = 0;
   var lastIdx  = -1;
 
+  /* On mobile the section is static — show all steps immediately */
+  if(isMobileReveal){
+    steps.forEach(function(el){ el.classList.add('step-in'); });
+    unlockAfterServicesFades();
+    return;
+  }
+
   /* Shift the WHOLE sticky panel (heading + box together) upward per step,
      so the heading and box never overlap each other.
      Hero z-index:2 covers any overshoot into hero territory on scroll-up.
@@ -1583,7 +1593,7 @@ window.addEventListener('scroll', function(){
   var isMobile = window.innerWidth <= 560;
   var finalPos = isMobile ? [
     [-110, -120, -3],
-    [ -30,  130,  2],
+    [-100,  130,  2],
     [  90, -110,  3],
     [ 130,   70, -2]
   ] : [
