@@ -356,7 +356,7 @@ img{display:block;}
 /* ─── Services scroll section ─── */
 .services-scroll{
   position:relative;
-  height:500vh;
+  height:400vh;
   background:var(--bg);
 }
 .services-sticky{
@@ -389,7 +389,7 @@ img{display:block;}
 }
 
 /* ─── Feature / Services block ─── */
-.feature{padding:110px 0 40px;overflow:hidden;}
+.feature{padding:110px 0;overflow:hidden;}
 .feat-grid{
   display:grid;grid-template-columns:1.05fr 1fr;
   gap:72px;align-items:center;
@@ -1476,12 +1476,16 @@ const io = new IntersectionObserver(function(entries){
 }, {threshold: .08, rootMargin: '0px 0px -24px 0px'});
 
 /* Elements inside or before the services section fade in normally.
-   Elements after services only start observing once the services animation is done (p=1). */
+   Elements strictly after services only start observing once the services animation is done (p=1).
+   On mobile, elements inside services also wait (delayed reveal).
+   On desktop, elements inside services fade in normally via IO. */
 var servicesSection = document.getElementById('services');
 var afterServicesFades = [];
+var isMobileReveal = window.innerWidth <= 860;
 document.querySelectorAll('.fade').forEach(function(el){
-  // Check if element comes after the services section in the DOM
-  if(servicesSection.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING){
+  var isInsideServices = servicesSection.contains(el);
+  var isAfterServices  = !isInsideServices && (servicesSection.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
+  if(isAfterServices || (isMobileReveal && isInsideServices)){
     afterServicesFades.push(el);
   } else {
     io.observe(el);
