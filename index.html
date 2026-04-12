@@ -924,7 +924,7 @@ footer{
   .pricing-cards{gap:32px;}
 }
 @media(max-width:860px){
-  .services-scroll{height:120vh;}
+  .services-scroll{height:220vh;}
   .clients-scatter{height:150vh;}
   .feature{padding:48px 0;}
   .nav-links{display:none;}
@@ -1531,11 +1531,12 @@ window.addEventListener('scroll', function(){
     var stepIdx = Math.min(Math.floor(p * N), N - 1);
 
     /* Reveal steps forward only — steps stay revealed on scroll-up */
+    var stepDelay = window.innerWidth <= 860 ? 220 : 80;
     for(var i = 0; i <= stepIdx; i++){
       if(!steps[i].classList.contains('step-in')){
         (function(el, delay){
           setTimeout(function(){ el.classList.add('step-in'); }, delay);
-        })(steps[i], (i - revealed) * 80);
+        })(steps[i], (i - revealed) * stepDelay);
         revealed = Math.max(revealed, i + 1);
       }
     }
