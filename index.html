@@ -199,6 +199,16 @@ img{display:block;}
   .vd{ display:none; }
   .nav-quote:hover{ opacity:1; transform:none; box-shadow:0 4px 16px rgba(212,43,26,.28); }
   .nav-quote:hover::before{ opacity:0; }
+  /* Bottom fade overlay — sits above the grid, blends hero into services */
+  .hero::after{
+    content:'';
+    position:absolute;
+    bottom:0;left:0;right:0;
+    height:45%;
+    background:linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+    pointer-events:none;
+    z-index:1;
+  }
   @keyframes gridSweep{
     0%   { mask-position:300% 0%; -webkit-mask-position:300% 0%; }
     50%  { mask-position:-150% 0%; -webkit-mask-position:-150% 0%; }
