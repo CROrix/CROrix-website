@@ -294,6 +294,22 @@ img{display:block;}
 }
 .fc-sub{font-size:.68rem;color:var(--text-3);margin-top:3px;}
 
+/* Model loader spinner */
+.model-loader{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:48px;height:48px;
+  border-radius:50%;
+  border:2px solid var(--border);
+  border-top-color:var(--red);
+  border-right-color:var(--blue);
+  animation:modelSpin .9s linear infinite;
+  z-index:2;
+  transition:opacity .4s ease;
+}
+.model-loader.hidden{opacity:0;pointer-events:none;}
+@keyframes modelSpin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+
 /* Floating dots */
 .vd{position:absolute;border-radius:50%;}
 .vd1{width:10px;height:10px;background:var(--red);top:88px;right:56px;animation:fcFloat 4.5s ease-in-out infinite;}
@@ -1011,6 +1027,7 @@ footer{
         </div>
 
         <canvas id="model-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
+        <div class="model-loader" id="modelLoader"></div>
         <div class="vd vd1"></div>
         <div class="vd vd2"></div>
         <div class="vd vd3"></div>
@@ -1783,9 +1800,24 @@ function easeOutBack(t) {
 function setScale(obj, s) { if (obj) obj.scale.setScalar(s); }
 
 function initCycle() {
-  setOpacity(groups[0], 1);
-  setScale(groups[0], 1);
+  /* Hide spinner */
+  const loader = document.getElementById('modelLoader');
+  if (loader) loader.classList.add('hidden');
+
+  /* Pop first model in */
+  setOpacity(groups[0], 0);
+  setScale(groups[0], 0.55);
   scene.add(groups[0]);
+  const popStart = performance.now();
+  function popIn() {
+    const t = Math.min((performance.now() - popStart) / 520, 1);
+    setOpacity(groups[0], Math.min(t * 2, 1));
+    setScale(groups[0], 0.55 + easeOutBack(t) * 0.45);
+    if (t < 1) requestAnimationFrame(popIn);
+    else { setOpacity(groups[0], 1); setScale(groups[0], 1); }
+  }
+  popIn();
+
   setInterval(() => {
     if (fading) return;
     nextIdx = (current + 1) % groups.length;
