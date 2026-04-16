@@ -74,7 +74,7 @@ img{display:block;}
 }
 .btn-grad{
   padding:12px 26px;
-  background:var(--grad);
+  background:var(--red);
   color:#fff;
   box-shadow:0 4px 18px rgba(212,43,26,.30);
   position:relative;isolation:isolate;
@@ -135,7 +135,7 @@ img{display:block;}
 .nav-quote{
   display:inline-flex;align-items:center;
   padding:10px 24px;border-radius:50px;
-  background:var(--grad);color:white;
+  background:var(--red);color:white;
   font-family:'DM Sans',sans-serif;font-size:.855rem;font-weight:700;
   border:none;cursor:pointer;text-decoration:none;
   box-shadow:0 4px 16px rgba(212,43,26,.28);
@@ -147,7 +147,7 @@ img{display:block;}
 .nav-quote::before{
   content:'';
   position:absolute;inset:-6px;
-  background:linear-gradient(120deg,#D42B1A,#D8D4EC,#1440B8);
+  background:var(--red);
   filter:blur(14px);
   opacity:0;
   border-radius:inherit;
@@ -246,7 +246,7 @@ img{display:block;}
 }
 .hero-pill-dot{
   width:7px;height:7px;border-radius:50%;
-  background:var(--grad);
+  background:var(--red);
   animation:pulse 2.5s ease-in-out infinite;
 }
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,43,26,.4);}50%{box-shadow:0 0 0 6px rgba(212,43,26,0);}}
@@ -323,7 +323,7 @@ img{display:block;}
 .fc-lbl{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px;}
 .fc-val{
   font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;line-height:1;
-  background:var(--grad-bright);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  color:var(--blue);
 }
 .fc-sub{font-size:.68rem;color:var(--text-3);margin-top:3px;}
 
@@ -357,7 +357,7 @@ img{display:block;}
 .s-eye{
   display:inline-block;
   font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--red);margin-bottom:12px;
+  color:var(--text-3);margin-bottom:12px;
 }
 .s-title{
   font-family:'Rajdhani',sans-serif;
@@ -411,7 +411,7 @@ img{display:block;}
 .feat-eye{
   display:inline-block;
   font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--red);margin-bottom:14px;
+  color:var(--text-3);margin-bottom:14px;
 }
 .feat-title{
   font-family:'Rajdhani',sans-serif;
@@ -435,8 +435,7 @@ img{display:block;}
 }
 .feat-cta:hover{gap:11px;}
 .feat-cta-arrow{
-  background:var(--grad-bright);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  color:var(--red);
 }
 
 /* ── Browser mockup ── */
@@ -475,7 +474,7 @@ img{display:block;}
 .wf-h-badge{
   padding:3px 10px;border-radius:100px;
   font-size:.65rem;font-weight:700;
-  background:var(--grad);color:white;
+  background:var(--blue);color:white;
 }
 .wf-steps{display:flex;flex-direction:column;}
 .wf-step{display:flex;align-items:flex-start;gap:10px;position:relative;}
@@ -490,7 +489,7 @@ img{display:block;}
   display:flex;align-items:center;justify-content:center;
   font-family:'Rajdhani',sans-serif;font-size:.8rem;font-weight:700;z-index:1;
 }
-.wf-num.done{background:var(--grad);color:white;box-shadow:0 3px 10px rgba(212,43,26,.35);}
+.wf-num.done{background:var(--red);color:white;box-shadow:0 3px 10px rgba(212,43,26,.35);}
 .wf-num.active{background:white;border:2px solid var(--red);color:var(--red);}
 .wf-num.todo{background:white;border:2px solid var(--border);color:var(--text-3);}
 .wf-card{
@@ -764,7 +763,7 @@ img{display:block;}
   flex-shrink:0;
   width:16px;height:16px;
   margin-top:1px;
-  background:linear-gradient(135deg,var(--red),var(--blue));
+  background:var(--blue);
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
 }
@@ -779,8 +778,7 @@ img{display:block;}
   letter-spacing:.04em;
 }
 .pc-note strong{
-  background:var(--grad-bright);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  color:var(--blue);
   font-weight:700;
 }
 
@@ -860,7 +858,7 @@ img{display:block;}
 }
 .fu-icon{
   width:42px;height:42px;margin:0 auto 12px;
-  background:var(--grad);border-radius:11px;
+  background:var(--blue);border-radius:11px;
   display:flex;align-items:center;justify-content:center;
 }
 .fu-text{font-size:.875rem;font-weight:600;color:var(--text);margin-bottom:4px;}
@@ -891,7 +889,7 @@ img{display:block;}
 
 .form-submit{
   width:100%;padding:14px;
-  background:var(--grad);color:white;
+  background:var(--red);color:white;
   border:none;border-radius:11px;
   font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;
   cursor:pointer;
@@ -949,7 +947,7 @@ footer{
   .hero-inner{grid-template-columns:1fr;text-align:center;gap:40px;padding:40px 0 64px;}
   .hero-sub{margin-left:auto;margin-right:auto;}
   .hero-ctas{justify-content:center;}
-  .hero-visual{height:340px;}
+  .hero-visual{height:420px;}
   .feat-grid{grid-template-columns:1fr;gap:40px;}
   .feat-desc{max-width:100%;}
   .contact-grid{grid-template-columns:1fr;gap:48px;}
@@ -1336,7 +1334,7 @@ footer{
       <div class="fade">
         <span class="feat-eye">Get in Touch</span>
         <h2>Let's build<br><span class="grad-text">something great.</span></h2>
-        <p>Send your project details, CAD files, or even just a rough sketch. We analyze your request and reply within 24 hours with a detailed quote and timeline.</p>
+        <p>Send your project details, CAD files or even just a rough sketch. We analyze your request and reply within 24 hours with a detailed quote and timeline.</p>
         <div class="contact-info">
           <div class="contact-info-item">
             <div class="contact-info-icon">📧</div>
