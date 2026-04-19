@@ -186,9 +186,9 @@ img{display:block;}
 @media(hover:none){
   #hero-grid-active{
     opacity:.34;
-    -webkit-mask-image:linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%), linear-gradient(to bottom, black 35%, transparent 75%);
+    -webkit-mask-image:linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%), linear-gradient(to bottom, black 45%, transparent 100%);
     -webkit-mask-composite:source-in;
-    mask-image:linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%), linear-gradient(to bottom, black 35%, transparent 75%);
+    mask-image:linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%), linear-gradient(to bottom, black 45%, transparent 100%);
     mask-composite:intersect;
     mask-size:300% 100%;
     -webkit-mask-size:300% 100%;
@@ -199,17 +199,15 @@ img{display:block;}
   .vd{ display:none; }
   .nav-quote:hover{ opacity:1; transform:none; box-shadow:0 4px 16px rgba(212,43,26,.28); }
   .nav-quote:hover::before{ opacity:0; }
-  /* Remove bottom feather on mobile — grid already has its own fade mask and the model sits at the bottom */
-  .hero::after{ display:none; }
-  /* Compensate with a top-fade on services so the grid-to-content transition stays soft */
-  .services-scroll::before{
+  /* Bottom fade overlay — sits above the grid, blends hero into services */
+  .hero::after{
     content:'';
     position:absolute;
-    top:0;left:0;right:0;
-    height:40vh;
-    background:linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
+    bottom:0;left:0;right:0;
+    height:45%;
+    background:linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
     pointer-events:none;
-    z-index:2;
+    z-index:1;
   }
   @keyframes gridSweep{
     0%   { mask-position:300% 0%; -webkit-mask-position:300% 0%; }
