@@ -209,6 +209,8 @@ img{display:block;}
     pointer-events:none;
     z-index:1;
   }
+  /* Lift canvas above the bottom feather so model isn't obscured on mobile */
+  .hero-visual{ position:relative; z-index:2; }
   @keyframes gridSweep{
     0%   { mask-position:300% 0%; -webkit-mask-position:300% 0%; }
     50%  { mask-position:-150% 0%; -webkit-mask-position:-150% 0%; }
@@ -1807,7 +1809,7 @@ function makeMat() {
 }
 function makeMetalMat() {
   return new THREE.MeshStandardMaterial({
-    color: 0xBEC2CC, metalness: 0.88, roughness: 0.15,
+    color: 0xD4D8E2, metalness: 0.82, roughness: 0.18,
     transparent: true, opacity: 1
   });
 }
