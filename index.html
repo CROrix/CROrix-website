@@ -1385,7 +1385,7 @@ footer{
           <!-- File upload -->
           <label class="form-label">Attach Model Files <span>(optional)</span></label>
           <div class="file-upload" id="fileUploadZone">
-            <input type="file" id="fileInput" accept=".stl,.obj,.step,.stp,.3mf,.iges,.igs,.fbx" multiple>
+            <input type="file" id="fileInput" accept=".stl,.obj,.step,.3mf,.pdf,.jpg,.jpeg" multiple>
             <div class="fu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -1400,8 +1400,8 @@ footer{
               <span class="fu-fmt">OBJ</span>
               <span class="fu-fmt">STEP</span>
               <span class="fu-fmt">3MF</span>
-              <span class="fu-fmt">IGES</span>
-              <span class="fu-fmt">FBX</span>
+              <span class="fu-fmt">PDF</span>
+              <span class="fu-fmt">JPG</span>
             </div>
           </div>
           <div class="file-list" id="fileList"></div>
@@ -1805,6 +1805,18 @@ function makeMat() {
     transparent: true, opacity: 1
   });
 }
+function makeMetalMat() {
+  return new THREE.MeshStandardMaterial({
+    color: 0xBEC2CC, metalness: 0.88, roughness: 0.15,
+    transparent: true, opacity: 1
+  });
+}
+function makePlasticMat() {
+  return new THREE.MeshStandardMaterial({
+    color: 0xE8E8F0, metalness: 0.0, roughness: 0.80,
+    transparent: true, opacity: 1
+  });
+}
 function setOpacity(obj, o) {
   obj.traverse(c => {
     if (!c.isMesh) return;
@@ -1812,7 +1824,7 @@ function setOpacity(obj, o) {
       .forEach(m => { m.transparent = true; m.opacity = o; });
   });
 }
-function normalize(geo) {
+function normalize(geo, mat) {
   /* Center the raw geometry so its bounding box mid-point is at the mesh origin.
      This ensures the pivot (rotation axis) is exactly at the model's center. */
   geo.computeBoundingBox();
@@ -1821,7 +1833,7 @@ function normalize(geo) {
   const sz = geo.boundingBox.getSize(new THREE.Vector3());
   const s  = 2.6 / Math.max(sz.x, sz.y, sz.z);
 
-  const mesh = new THREE.Mesh(geo, makeMat());
+  const mesh = new THREE.Mesh(geo, mat || makeMat());
   mesh.scale.setScalar(s);
 
   /* Tilt the mesh ~38° around X so it sits at a clear angle for the viewer */
@@ -1834,22 +1846,22 @@ function normalize(geo) {
 
 /* ── STL models ── */
 const FILES = [
-  'Materijali/blok.STL',
-  'Materijali/vratilo.STL',
-  'Materijali/Bolt.stl',
-  'Materijali/Naocale.stl',
-  'Materijali/Toster%20poluga.stl',
+  { path: 'Materijali/blok.STL',             mat: makeMetalMat  },
+  { path: 'Materijali/vratilo.STL',           mat: makeMetalMat  },
+  { path: 'Materijali/Bolt.stl',              mat: makeMetalMat  },
+  { path: 'Materijali/Naocale.stl',           mat: makePlasticMat },
+  { path: 'Materijali/Toster%20poluga.stl',   mat: makePlasticMat },
 ];
 
 const groups     = new Array(FILES.length).fill(null);
 let   loadedCount = 0;
 const stlLoader  = new STLLoader();
 
-FILES.forEach((path, i) => {
+FILES.forEach(({ path, mat }, i) => {
   stlLoader.load(
     path,
     geo => {
-      const grp = normalize(geo);
+      const grp = normalize(geo, mat());
       setOpacity(grp, 0);
       groups[i] = grp;
       if (++loadedCount === FILES.length) initCycle();
@@ -1858,7 +1870,7 @@ FILES.forEach((path, i) => {
     () => {
       /* fallback placeholder */
       const geo = new THREE.TorusKnotGeometry(0.9, 0.28, 128, 16);
-      const grp = normalize(geo);
+      const grp = normalize(geo, mat());
       setOpacity(grp, 0);
       groups[i] = grp;
       if (++loadedCount === FILES.length) initCycle();
